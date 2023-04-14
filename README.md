@@ -2,7 +2,7 @@
 # Bank API
 
 This is a simple REST API for managing bank accounts. The API allows users to create accounts, deposit funds, withdraw funds, and transfer funds between accounts.
-#### Currently using this custom Account Number generator util [Generator.java]([IkemNwodo/VPDAccountSystem/src/main/java/com/ikem/vpda_ccount_system/util/Generator.java](https://github.com/IkemNwodo/VPDAccountSystem/blob/master/src/main/java/com/ikem/vpda_ccount_system/util/Generator.java)) to generate account numbers for new accounts. Will add ability to use last 10 digits of a user phone number, soon.
+#### Currently using this custom Account Number generator util [Generator.java](https://github.com/IkemNwodo/VPDAccountSystem/blob/master/src/main/java/com/ikem/vpda_ccount_system/util/Generator.java) to generate account numbers for new accounts. Will add ability to use last 10 digits of a user phone numberas account number, soon.
 
 ## Technologies Used
 - Spring Boot 3.0.5
