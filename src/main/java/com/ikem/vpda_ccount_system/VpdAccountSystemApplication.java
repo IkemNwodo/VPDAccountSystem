@@ -12,8 +12,4 @@ public class VpdAccountSystemApplication {
         SpringApplication.run(VpdAccountSystemApplication.class, args);
     }
 
-    @Bean
-    public ModelMapper modelMapper(){
-        return new ModelMapper();
-    }
 }
