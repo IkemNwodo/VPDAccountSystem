@@ -15,7 +15,7 @@ public class AccountDto {
 
     private String accountNumber;
     private String accountName;
-    private BigDecimal balance = BigDecimal.valueOf(0.0);
+    private BigDecimal balance;
     private Set<Transaction> transactions;
 
 }

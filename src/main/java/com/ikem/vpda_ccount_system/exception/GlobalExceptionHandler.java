@@ -16,12 +16,21 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountAlreadyExistsException.class)
-    public ResponseEntity<ErrorDetails> handleBlogAPIException(
+    public ResponseEntity<ErrorDetails> handleExistingAccountException(
             AccountAlreadyExistsException exception,
             WebRequest webRequest
     ) {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorDetails> handleNotFoundException(
+            ResourceNotFoundException exception,
+            WebRequest webRequest
+    ) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> validation(MethodArgumentNotValidException ex) {

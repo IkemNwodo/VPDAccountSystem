@@ -2,6 +2,7 @@ package com.ikem.vpda_ccount_system.controller;
 
 import com.ikem.vpda_ccount_system.payload.AccountDto;
 import com.ikem.vpda_ccount_system.payload.CreateAccountDto;
+import com.ikem.vpda_ccount_system.payload.deposit.DepositDto;
 import com.ikem.vpda_ccount_system.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,12 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public AccountDto createAccount(@Validated @RequestBody CreateAccountDto createAccountDto) {
         return accountService.createAccount(createAccountDto);
+    }
+
+    @PostMapping("/deposit")
+    @ResponseStatus(HttpStatus.CREATED)
+    public DepositDto fundAccount(@Validated @RequestBody DepositDto depositDto){
+        return accountService.deposit(depositDto);
     }
 
 

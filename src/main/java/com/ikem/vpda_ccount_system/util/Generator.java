@@ -1,7 +1,7 @@
 package com.ikem.vpda_ccount_system.util;
 
 public class Generator {
-    private static final int ACCOUNT_LENGTH = 10;
+    private static final int ACCOUNT_LENGTH = 11;
     public static String  accountNumber(String lastAccountNumber){
         var parsedAccountNumber = Integer.parseInt(lastAccountNumber);
         parsedAccountNumber++;

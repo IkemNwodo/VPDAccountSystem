@@ -1,10 +1,12 @@
 package com.ikem.vpda_ccount_system.service.impl;
 
 import com.ikem.vpda_ccount_system.exception.AccountAlreadyExistsException;
+import com.ikem.vpda_ccount_system.exception.ResourceNotFoundException;
 import com.ikem.vpda_ccount_system.model.Account;
 import com.ikem.vpda_ccount_system.model.User;
 import com.ikem.vpda_ccount_system.payload.AccountDto;
 import com.ikem.vpda_ccount_system.payload.CreateAccountDto;
+import com.ikem.vpda_ccount_system.payload.deposit.DepositDto;
 import com.ikem.vpda_ccount_system.repository.AccountRepository;
 import com.ikem.vpda_ccount_system.repository.UserRepository;
 import com.ikem.vpda_ccount_system.service.AccountService;
@@ -12,6 +14,7 @@ import com.ikem.vpda_ccount_system.util.Generator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -20,6 +23,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
@@ -62,8 +66,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto deposit(double amount) {
-        return null;
+    public DepositDto deposit(DepositDto depositDto) {
+        var account = accountRepository.findAccountByAccountNumber(depositDto.getAccountNumber()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "accountNumber", depositDto.getAccountNumber())
+        );
+        account.setBalance(account.getBalance().add(depositDto.getAmount()));
+        var updatedAccount = accountRepository.save(account);
+        return DepositDto.builder()
+                .accountNumber(updatedAccount.getAccountNumber())
+                .amount(depositDto.getAmount())
+                .currentBalance(updatedAccount.getBalance())
+                .build();
     }
 
     @Override
