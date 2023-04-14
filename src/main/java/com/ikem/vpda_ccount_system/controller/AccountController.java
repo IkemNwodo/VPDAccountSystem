@@ -3,6 +3,7 @@ package com.ikem.vpda_ccount_system.controller;
 import com.ikem.vpda_ccount_system.payload.AccountDto;
 import com.ikem.vpda_ccount_system.payload.CreateAccountDto;
 import com.ikem.vpda_ccount_system.payload.deposit.DepositDto;
+import com.ikem.vpda_ccount_system.payload.deposit.WithdrawDto;
 import com.ikem.vpda_ccount_system.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,12 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public DepositDto fundAccount(@Validated @RequestBody DepositDto depositDto){
         return accountService.deposit(depositDto);
+    }
+
+    @PostMapping("/withdraw")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public WithdrawDto makeWithdrawal(@Validated @RequestBody WithdrawDto withdrawDto){
+        return accountService.withdraw(withdrawDto);
     }
 
 
