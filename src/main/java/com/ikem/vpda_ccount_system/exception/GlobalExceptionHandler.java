@@ -15,6 +15,15 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDetails> handleAllExceptions(
+            Exception exception,
+            WebRequest webRequest
+    ) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(AccountAlreadyExistsException.class)
     public ResponseEntity<ErrorDetails> handleExistingAccountException(
             AccountAlreadyExistsException exception,

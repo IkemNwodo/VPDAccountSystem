@@ -5,6 +5,7 @@ import com.ikem.vpda_ccount_system.payload.AccountDto;
 import com.ikem.vpda_ccount_system.payload.CreateAccountDto;
 import com.ikem.vpda_ccount_system.payload.deposit.DepositDto;
 import com.ikem.vpda_ccount_system.payload.deposit.WithdrawDto;
+import com.ikem.vpda_ccount_system.payload.transfer.TransferDto;
 import lombok.With;
 
 public interface AccountService {
@@ -15,7 +16,7 @@ public interface AccountService {
 
     WithdrawDto withdraw(WithdrawDto withdrawDto);
 
-    AccountDto transfer(int accountNumber, double amount);
+    TransferDto transfer(TransferDto transferDto);
 
 
 

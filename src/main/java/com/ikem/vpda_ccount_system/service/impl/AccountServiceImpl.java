@@ -3,12 +3,14 @@ package com.ikem.vpda_ccount_system.service.impl;
 import com.ikem.vpda_ccount_system.exception.AccountAlreadyExistsException;
 import com.ikem.vpda_ccount_system.exception.InsufficientBalanceException;
 import com.ikem.vpda_ccount_system.exception.ResourceNotFoundException;
+import com.ikem.vpda_ccount_system.exception.TransferToSelfException;
 import com.ikem.vpda_ccount_system.model.Account;
 import com.ikem.vpda_ccount_system.model.User;
 import com.ikem.vpda_ccount_system.payload.AccountDto;
 import com.ikem.vpda_ccount_system.payload.CreateAccountDto;
 import com.ikem.vpda_ccount_system.payload.deposit.DepositDto;
 import com.ikem.vpda_ccount_system.payload.deposit.WithdrawDto;
+import com.ikem.vpda_ccount_system.payload.transfer.TransferDto;
 import com.ikem.vpda_ccount_system.repository.AccountRepository;
 import com.ikem.vpda_ccount_system.repository.UserRepository;
 import com.ikem.vpda_ccount_system.service.AccountService;
@@ -58,15 +60,6 @@ public class AccountServiceImpl implements AccountService {
         return mapToDto(accountCreated);
     }
 
-    private AccountDto mapToDto(Account accountCreated) {
-        return AccountDto.builder()
-                .accountName(accountCreated.getAccountName())
-                .accountNumber(accountCreated.getAccountNumber())
-                .balance(accountCreated.getBalance())
-                .transactions(accountCreated.getTransactions())
-                .build();
-    }
-
     @Override
     public DepositDto deposit(DepositDto depositDto) {
         var account = fetchAccount(depositDto.getAccountNumber());
@@ -83,17 +76,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public WithdrawDto withdraw(WithdrawDto withdrawDto) {
-        var account = fetchAccount(withdrawDto.getAccountNumber());
-
-        var balance = account.getBalance().subtract(withdrawDto.getAmount());
-        if (balance.doubleValue() < 0.0)
-            throw new InsufficientBalanceException(account.getAccountName(), withdrawDto.getAmount(), account.getBalance());
-
-        account.setBalance(balance);
-        accountRepository.save(account);
+        var balance = withdraw(withdrawDto.getAccountNumber(), withdrawDto.getAmount());
 
         return WithdrawDto.builder()
-                .accountNumber(account.getAccountNumber())
+                .accountNumber(withdrawDto.getAccountNumber())
                 .amount(withdrawDto.getAmount())
                 .currentBalance(balance)
                 .message("Withdrawal successful")
@@ -101,13 +87,48 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto transfer(int accountNumber, double amount) {
-        return null;
+    public TransferDto transfer(TransferDto transferDto) {
+        if (transferDto.getSourceAccountNumber().equals(transferDto.getDestinationAccountNumber()))
+            throw new TransferToSelfException(transferDto.getDestinationAccountNumber());
+
+        var balance = withdraw(transferDto.getSourceAccountNumber(), transferDto.getAmount());
+        var destinationAccount = fetchAccount(transferDto.getDestinationAccountNumber());
+        destinationAccount.setBalance(destinationAccount.getBalance().add(transferDto.getAmount()));
+        accountRepository.save(destinationAccount);
+
+        return TransferDto.builder()
+                .message("Transfer successful")
+                .destinationAccountNumber(transferDto.getDestinationAccountNumber())
+                .sourceAccountNumber(transferDto.getSourceAccountNumber())
+                .amount(transferDto.getAmount())
+                .currentBalance(balance)
+                .build();
+    }
+
+    private AccountDto mapToDto(Account accountCreated) {
+        return AccountDto.builder()
+                .accountName(accountCreated.getAccountName())
+                .accountNumber(accountCreated.getAccountNumber())
+                .balance(accountCreated.getBalance())
+                .transactions(accountCreated.getTransactions())
+                .build();
     }
 
     private Account fetchAccount(String accountNumber) {
         return accountRepository.findAccountByAccountNumber(accountNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Account", "accountNumber", accountNumber)
         );
+    }
+
+    private BigDecimal withdraw(String accountNumber, BigDecimal amount) {
+        var account = fetchAccount(accountNumber);
+
+        var balance = account.getBalance().subtract(amount);
+        if (balance.doubleValue() < 0.0)
+            throw new InsufficientBalanceException(account.getAccountName(), amount, account.getBalance());
+
+        account.setBalance(balance);
+        accountRepository.save(account);
+        return balance;
     }
 }

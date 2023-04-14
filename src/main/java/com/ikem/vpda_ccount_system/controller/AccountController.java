@@ -4,11 +4,10 @@ import com.ikem.vpda_ccount_system.payload.AccountDto;
 import com.ikem.vpda_ccount_system.payload.CreateAccountDto;
 import com.ikem.vpda_ccount_system.payload.deposit.DepositDto;
 import com.ikem.vpda_ccount_system.payload.deposit.WithdrawDto;
+import com.ikem.vpda_ccount_system.payload.transfer.TransferDto;
 import com.ikem.vpda_ccount_system.service.AccountService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,5 +36,10 @@ public class AccountController {
         return accountService.withdraw(withdrawDto);
     }
 
+    @PostMapping("/transfer")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public TransferDto makeTransfer(@Validated @RequestBody TransferDto transferDto){
+        return accountService.transfer(transferDto);
+    }
 
 }
